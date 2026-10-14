@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Sonora Completo</title>
+<style>
+:root{--bg:#121212;--pn:#1e1e1e;--tx:#fff;--mu:#a7a7a7;--ac:#1ed760;--hv:#2c2c2c;--ac2:#06260f;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f6f6;--pn:#fff;--tx:#111;--mu:#666;--ac:#15a84a;--hv:#e8e8e8;--ac2:#fff;color-scheme:light}}
+:root[data-theme="dark"]{--bg:#121212;--pn:#1e1e1e;--tx:#fff;--mu:#a7a7a7;--ac:#1ed760;--hv:#2c2c2c;--ac2:#06260f}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:15px system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;max-width:900px;margin:auto}
+header{padding:14px 16px 6px;display:flex;align-items:center;gap:10px}
+h1{font-size:20px;margin:0;color:var(--ac);flex:1}
+button{font:inherit;color:inherit;background:var(--hv);border:0;border-radius:20px;padding:8px 14px;cursor:pointer}
+button.p{background:var(--ac);color:var(--ac2);font-weight:600}
+#nav{display:flex;gap:8px;overflow-x:auto;padding:6px 16px}
+#nav button{white-space:nowrap}#nav button.on{background:var(--tx);color:var(--bg)}
+#bar{display:flex;gap:8px;padding:8px 16px;align-items:center}
+#bar h2{flex:1;margin:0;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#q{margin:0 16px;padding:10px 14px;border-radius:20px;border:0;background:var(--pn);color:var(--tx);font:inherit}
+#list{flex:1;overflow-y:auto;padding:8px}
+.r{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer}
+.r:hover{background:var(--hv)}.r.on .t{color:var(--ac)}
+.r .n{width:22px;color:var(--mu);text-align:right}.t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r.miss .t{color:var(--mu)}.r small{color:var(--mu)}
+.ic{background:none;padding:4px 8px;color:var(--mu);font-size:18px}
+.empty{color:var(--mu);text-align:center;padding:40px 20px;line-height:1.6}
+#menu{position:fixed;background:var(--pn);border:1px solid var(--hv);border-radius:10px;padding:6px;display:none;z-index:9;min-width:180px;box-shadow:0 8px 24px #0006}
+#menu div{padding:9px 12px;border-radius:6px;cursor:pointer}#menu div:hover{background:var(--hv)}
+footer{background:var(--pn);padding:10px 16px;border-top:1px solid var(--hv)}
+#np{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:20px}
+#ctl{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0}
+#ctl button{font-size:18px;padding:8px 12px}#ctl .on{color:var(--ac)}
+#sk{display:flex;gap:8px;align-items:center;color:var(--mu);font-size:12px}
+input[type=range]{flex:1;accent-color:var(--ac)}#vol{max-width:90px;flex:none}
+#md{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:20}#md>div{background:var(--pn);padding:18px;border-radius:12px;width:min(90%,380px)}#md input{width:100%;margin:10px 0;padding:10px;border-radius:8px;border:1px solid var(--hv);background:var(--bg);color:var(--tx);font:inherit}#md .b{display:flex;gap:8px;justify-content:flex-end}#toast{position:fixed;left:50%;bottom:130px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;display:none;z-index:30}
+#im{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:20}#im>div{background:var(--pn);padding:18px;border-radius:12px;width:min(92%,420px)}#im textarea,#im input[type=text]{width:100%;margin:8px 0;padding:10px;border-radius:8px;border:1px solid var(--hv);background:var(--bg);color:var(--tx);font:inherit}#im textarea{height:140px;resize:vertical}#im .b{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}#im p{margin:4px 0;color:var(--mu);font-size:13px;line-height:1.4}
+</style></head><body>
+<header><h1>♪ Sonora</h1><button id="add" class="p">+ Músicas</button><button id="demo">🎵 Exemplos</button><input id="f" type="file" accept="audio/*" multiple hidden></header>
+<div id="nav"></div>
+<div id="bar"><h2 id="ttl"></h2><span id="act"></span></div>
+<input id="q" placeholder="Pesquisar…">
+<div id="list"></div><div id="menu"></div>
+<footer><div id="np">Nada a tocar</div>
+<div id="sk"><span id="cu">0:00</span><input id="seek" type="range" min="0" max="100" value="0" step="0.1"><span id="du">0:00</span></div>
+<div id="ctl"><button id="sh" title="Aleatório">⇄</button><button id="pv">⏮</button><button id="pp" class="p">▶</button><button id="nx">⏭</button><input id="vol" type="range" min="0" max="1" step="0.01" value="1"></div></footer>
+<div id="md"><div><div id="mm"></div><input id="mi"><div class="b"><button id="mc">Cancelar</button><button id="mo" class="p">OK</button></div></div></div><div id="toast"></div>
+<div id="im"><div><b>Importar playlist</b><p>Cola um código do Sonora, ou uma lista (uma música por linha, "Artista - Título"), ou escolhe o ficheiro CSV exportado do Spotify.</p><input id="in" type="text" placeholder="Nome da playlist (opcional)"><textarea id="it" placeholder="Cola aqui…"></textarea><input id="if" type="file" accept=".csv,.txt,text/csv,text/plain"><div class="b"><button id="ic2">Cancelar</button><button id="io" class="p">Importar</button></div></div></div>
+<script>
+const $=s=>document.querySelector(s),A=new Audio();
+let lib={},al={},online={},D=[],dt,pls=[],cur='lib',q=[],qi=-1,shuf=false,playing=null;
+try{pls=JSON.parse(localStorage.getItem('pls')||'[]')}catch(e){}
+try{online=JSON.parse(localStorage.getItem('on')||'{}');}catch(e){}
+Object.assign(lib,online);
+const save=()=>{try{localStorage.setItem('pls',JSON.stringify(pls));localStorage.setItem('on',JSON.stringify(online))}catch(e){}};
+const uid=()=>Math.random().toString(36).slice(2,8);
+const fmt=s=>isFinite(s)?Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'):'0:00';
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pl=()=>pls.find(p=>p.id===cur);
+const names=()=>cur==='lib'?Object.keys(lib):(pl()?pl().tracks:[]);
+function dlg(msg,inp,def){return new Promise(res=>{const md=$('#md'),mi=$('#mi');$('#mm').textContent=msg;mi.style.display=inp?'block':'none';mi.value=def||'';md.style.display='flex';if(inp){mi.focus();mi.select()}
+const end=v=>{md.style.display='none';$('#mo').onclick=$('#mc').onclick=mi.onkeydown=null;res(v)};
+$('#mo').onclick=()=>end(inp?mi.value.trim():true);$('#mc').onclick=()=>end(inp?null:false);mi.onkeydown=e=>{if(e.key==='Enter')end(mi.value.trim());if(e.key==='Escape')end(null)}})}
+const ask=(m,d)=>dlg(m,1,d),yes=m=>dlg(m,0);
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2500)}
+const U=n=>lib[n]||al[n];
+const nz=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+function relink(){const ks=Object.keys(lib);pls.forEach(p=>p.tracks.forEach(t=>{if(lib[t])return;const x=t.split(' – '),a=x.length>1?x[0]:'',b=x.length>1?x.slice(1).join(' – '):t,nt=nz(b),na=nz(a);if(!nt)return;const k=ks.find(k=>{const z=nz(k);return z.includes(nt)&&(!na||z.includes(na))});if(k)al[t]=lib[k]}))}
+function csv(t){const R=[];let r=[],c='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}else if(ch=='"')q=true;else if(ch==','){r.push(c);c=''}else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;r.push(c);c='';R.push(r);r=[]}else c+=ch}if(c||r.length){r.push(c);R.push(r)}return R}
+function parseList(t){let ns=[];const h=t.split(/\r?\n/)[0].toLowerCase();
+ if(h.includes('track name')){const R=csv(t),H=R[0].map(x=>x.trim().toLowerCase()),a=H.findIndex(x=>x.startsWith('artist')),n=H.indexOf('track name');ns=R.slice(1).filter(r=>r[n]).map(r=>{const ar=(r[a]||'').split(';')[0].trim();return(ar?ar+' – ':'')+r[n].trim()})}
+ else ns=t.split(/\r?\n/).map(x=>x.replace(/^\s*\d+[.)]\s*/,'').replace(/\s+-\s+/,' – ').trim()).filter(Boolean);
+ return[...new Set(ns)]}
+function openImp(){const im=$('#im');im.style.display='flex';$('#it').value='';$('#in').value='';$('#if').value='';
+ $('#ic2').onclick=()=>im.style.display='none';
+ $('#if').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('#it').value=r.result;if(!$('#in').value)$('#in').value=f.name.replace(/\.[^.]+$/,'')};r.readAsText(f)};
+ $('#io').onclick=()=>{const t=$('#it').value.trim();if(!t){toast('Cola uma lista ou escolhe um ficheiro.');return}
+  if(!/\n/.test(t)&&imp(t)){im.style.display='none';return}
+  const ns=parseList(t);if(!ns.length){toast('Não encontrei músicas.');return}
+  const p={id:uid(),name:$('#in').value.trim()||'Playlist importada',tracks:ns};pls.push(p);cur=p.id;save();relink();im.style.display='none';render();toast(ns.length+' músicas importadas. Adiciona os ficheiros para as ouvires.')}}
+const SR=22050;
+function wav(f){const n=f.length,b=new DataView(new ArrayBuffer(44+n*2));const w=(o,s)=>[...s].forEach((c,i)=>b.setUint8(o+i,c.charCodeAt(0)));w(0,'RIFF');b.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');b.setUint32(16,16,true);b.setUint16(20,1,true);b.setUint16(22,1,true);b.setUint32(24,SR,true);b.setUint32(28,SR*2,true);b.setUint16(32,2,true);b.setUint16(34,16,true);w(36,'data');b.setUint32(40,n*2,true);for(let i=0;i<n;i++)b.setInt16(44+i*2,Math.max(-1,Math.min(1,f[i]))*32767,true);return URL.createObjectURL(new Blob([b],{type:'audio/wav'}))}
+function gen(c){const secs=32,f=new Float32Array(SR*secs);let seed=c.s;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647,beat=60/c.bpm/2,hz=m=>440*2**((m-69)/12);
+ const note=(t,m,d,a,pad)=>{const f0=hz(m),s0=Math.floor(t*SR),L=Math.floor(d*SR);for(let i=0;i<L&&s0+i<f.length;i++){const x=i/SR,env=Math.min(1,x*40)*Math.exp(-x*(pad?.8:4.5)),ph=2*Math.PI*f0*x;f[s0+i]+=a*env*(Math.sin(ph)+(pad?.3*Math.sin(2*ph):.25*Math.sin(3*ph)))}};
+ let t=0,step=0;
+ while(t<secs-1){const ch=c.ch[Math.floor(step/8)%c.ch.length];
+  if(step%8==0){note(t,c.root+ch[0]-12,beat*8,.22,1);ch.forEach(k=>note(t,c.root+k,beat*8,.07,1))}
+  if(rnd()<c.d)note(t,c.root+12+c.sc[Math.floor(rnd()*c.sc.length)]+(rnd()<.2?12:0),beat*3,.16,0);
+  t+=beat;step++}
+ const dl=Math.floor(SR*beat*1.5);for(let i=dl;i<f.length;i++)f[i]+=f[i-dl]*.3;
+ let mx=0;for(let i=0;i<f.length;i++)mx=Math.max(mx,Math.abs(f[i]));for(let i=0;i<f.length;i++)f[i]/=mx*1.1;
+ const fo=SR*2;for(let i=0;i<fo;i++)f[f.length-1-i]*=i/fo;return wav(f)}
+const PM=[0,3,5,7,10],PM2=[0,2,4,7,9];
+const DEMO=[
+{n:'Sonora – Madrugada Calma',bpm:70,root:57,sc:PM,d:.55,s:11,ch:[[0,3,7],[-4,0,3],[3,7,10],[-2,2,5]]},
+{n:'Sonora – Maré Alta',bpm:84,root:52,sc:PM2,d:.6,s:23,ch:[[0,4,7],[5,9,12],[7,11,14],[-3,0,4]]},
+{n:'Sonora – Luz de Tarde',bpm:96,root:55,sc:PM2,d:.65,s:37,ch:[[0,4,7],[-3,0,4],[-7,-3,0],[-5,-1,2]]},
+{n:'Sonora – Noite de Chuva',bpm:60,root:50,sc:PM,d:.45,s:41,ch:[[0,3,7],[-4,0,3],[3,7,10],[-2,2,5]]},
+{n:'Sonora – Estrada Aberta',bpm:104,root:48,sc:PM2,d:.7,s:53,ch:[[0,4,7],[7,11,14],[9,12,16],[5,9,12]]}];
+$('#demo').onclick=async()=>{toast('A criar músicas…');let p=pls.find(x=>x.name==='Exemplos Sonora');if(!p){p={id:uid(),name:'Exemplos Sonora',tracks:[]};pls.push(p)}
+ for(const c of DEMO){if(!lib[c.n]){lib[c.n]=gen(c);await new Promise(r=>setTimeout(r))}if(!p.tracks.includes(c.n))p.tracks.push(c.n)}
+ save();cur=p.id;render();toast(DEMO.length+' músicas adicionadas')};
+$('#add').onclick=()=>$('#f').click();
+$('#f').onchange=e=>{for(const f of e.target.files)lib[f.name.replace(/\.[^.]+$/,'')]=URL.createObjectURL(f);e.target.value='';relink();render()};
+function render(){
+ $('#nav').innerHTML='<button class="'+(cur==='lib'?'on':'')+'" data-v="lib">Biblioteca</button><button class="'+(cur==='disc'?'on':'')+'" data-v="disc">🔎 Descobrir</button>'+pls.map(p=>'<button class="'+(cur===p.id?'on':'')+'" data-v="'+p.id+'">'+esc(p.name)+'</button>').join('')+'<button data-v="new">＋ Nova</button><button data-v="imp">⇣ Importar</button>';
+ $('#nav').querySelectorAll('button').forEach(b=>b.onclick=async()=>{const v=b.dataset.v;
+  if(v==='new'){const n=await ask('Nome do álbum/playlist:');if(n){const p={id:uid(),name:n,tracks:[]};pls.push(p);cur=p.id;save()}}
+  else if(v==='imp'){openImp();return}
+  else cur=v;render()});
+ if(cur==='disc'){renderDisc();return}
+ const p=pl();$('#ttl').textContent=cur==='lib'?'Biblioteca':p.name;
+ $('#act').innerHTML=cur==='lib'?'':'<button id="shr" class="p">Partilhar</button> <button id="ren">✎</button> <button id="del">🗑</button>';
+ if(p){$('#shr').onclick=share;$('#ren').onclick=async()=>{const n=await ask('Novo nome:',p.name);if(n){p.name=n;save();render()}};$('#del').onclick=async()=>{if(await yes('Apagar "'+p.name+'"?')){pls=pls.filter(x=>x!==p);cur='lib';save();render()}}}
+ const f=$('#q').value.toLowerCase(),ns=names().filter(n=>n.toLowerCase().includes(f));
+ if(!ns.length){$('#list').innerHTML='<div class="empty">'+(cur==='lib'?'A tua biblioteca está vazia.<br>Toca em <b>+ Músicas</b> e escolhe ficheiros de áudio do teu dispositivo, ou toca em <b>🎵 Exemplos</b> para ouvir já.':'Álbum vazio.<br>Na Biblioteca, usa <b>＋</b> para adicionar músicas aqui.')+'</div>';return}
+ $('#list').innerHTML=ns.map((n,i)=>'<div class="r'+(n===playing?' on':'')+(U(n)?'':' miss')+'" data-n="'+esc(n)+'"><span class="n">'+(i+1)+'</span><span class="t">'+esc(n)+(U(n)?'':' <small>(adiciona o ficheiro)</small>')+'</span><button class="ic" data-a="m">＋</button>'+(cur!=='lib'?'<button class="ic" data-a="x">✕</button>':'')+'</div>').join('');
+ $('#list').querySelectorAll('.r').forEach(r=>r.onclick=e=>{const n=r.dataset.n,a=e.target.dataset.a;
+  if(a==='m'){e.stopPropagation();menu(e,n)}
+  else if(a==='x'){p.tracks=p.tracks.filter(t=>t!==n);save();render()}
+  else if(U(n)){q=ns.filter(U);play(q.indexOf(n))}});
+}
+function menu(e,n){const m=$('#menu');m.innerHTML=pls.map(p=>'<div data-id="'+p.id+'">'+esc(p.name)+'</div>').join('')+'<div data-id="new">＋ Nova playlist…</div>';
+ m.style.display='block';m.style.left=Math.min(e.clientX,innerWidth-200)+'px';m.style.top=Math.min(e.clientY,innerHeight-220)+'px';
+ m.querySelectorAll('div').forEach(d=>d.onclick=async()=>{m.style.display='none';let p=pls.find(x=>x.id===d.dataset.id);
+  if(!p){const nm=await ask('Nome da playlist:');if(!nm)return;p={id:uid(),name:nm,tracks:[]};pls.push(p)}
+  if(!p.tracks.includes(n))p.tracks.push(n);save();m.style.display='none';render()})}
+document.addEventListener('click',e=>{if(!e.target.closest('#menu')&&e.target.dataset.a!=='m')$('#menu').style.display='none'});
+$('#q').oninput=()=>{if(cur==='disc'){clearTimeout(dt);dt=setTimeout(dsearch,500)}else render()};
+function renderDisc(){
+ $('#ttl').textContent='Descobrir (Openverse)';$('#act').innerHTML='';
+ if(!D.length){dsearch();return}
+ $('#list').innerHTML=D.map((t,i)=>'<div class="r'+(t.n===playing?' on':'')+'" data-i="'+i+'"><span class="n">'+(i+1)+'</span><span class="t">'+esc(t.n)+'</span><button class="ic" data-a="m">＋</button></div>').join('');
+ $('#list').querySelectorAll('.r').forEach(r=>r.onclick=e=>{const t=D[+r.dataset.i];
+  if(e.target.dataset.a==='m'){e.stopPropagation();online[t.n]=t.u;lib[t.n]=t.u;menu(e,t.n);return}
+  D.forEach(x=>lib[x.n]=x.u);q=D.map(x=>x.n);play(+r.dataset.i)})}
+async function dsearch(){
+ if(cur!=='disc')return;const v=$('#q').value.trim();
+ $('#list').innerHTML='<div class="empty">A procurar…</div>';
+ try{const r=await fetch('https://api.openverse.org/v1/audio/?page_size=30&q='+encodeURIComponent(v||'music'));
+  const j=await r.json();D=(j.results||[]).filter(t=>t.url).map(t=>({n:(t.creator?t.creator+' – ':'')+t.title,u:t.url}));
+  if(!D.length){$('#list').innerHTML='<div class="empty">Sem resultados.</div>';return}
+  renderDisc()}
+ catch(e){D=[];$('#list').innerHTML='<div class="empty">Erro ao pesquisar: '+esc(String(e.message||e))+'<br>Não foi possível ligar ao Openverse. Abre o ficheiro diretamente no Safari/Chrome (não na pré-visualização) ou publica-o no GitHub Pages ou Netlify.</div>'}}
+const enc=p=>btoa(unescape(encodeURIComponent(JSON.stringify({n:p.name,t:p.tracks,u:Object.fromEntries(p.tracks.filter(t=>online[t]).map(t=>[t,online[t]]))}))));
+async function share(){const p=pl(),link=location.href.split('#')[0]+'#p='+enc(p);
+ try{if(navigator.share){await navigator.share({title:p.name,text:'Ouve o meu álbum "'+p.name+'" no Sonora',url:link});return}}catch(e){}
+ try{await navigator.clipboard.writeText(link);toast('Link copiado!')}catch(e){ask('Copia este link:',link)}}
+function imp(c){try{c=c.includes('#p=')?c.split('#p=')[1]:c.trim();const d=JSON.parse(decodeURIComponent(escape(atob(c))));
+ Object.assign(online,d.u||{});Object.assign(lib,d.u||{});const p={id:uid(),name:d.n,tracks:d.t};pls.push(p);cur=p.id;save();render();return true}catch(e){return false}}
+if(location.hash.startsWith('#p=')){imp(location.hash);history.replaceState(null,'',location.pathname)}
+render();
+</script></body></html>
