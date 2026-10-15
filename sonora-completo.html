@@ -134,7 +134,7 @@ async function dsearch(){
  if(cur!=='disc')return;const v=$('#q').value.trim();
  $('#list').innerHTML='<div class="empty">A procurar…</div>';
  try{const r=await fetch('https://api.openverse.org/v1/audio/?page_size=30&q='+encodeURIComponent(v||'music'));
-  const j=await r.json();D=(j.results||[]).filter(t=>t.url).map(t=>({n:(t.creator?t.creator+' – ':'')+t.title,u:t.url}));
+  const j=await r.json();if(!r.ok)throw new Error('Openverse respondeu com erro '+r.status+(j.detail?': '+j.detail:''));D=(j.results||[]).filter(t=>t.url).map(t=>({n:(t.creator?t.creator+' – ':'')+t.title,u:t.url}));
   if(!D.length){$('#list').innerHTML='<div class="empty">Sem resultados.</div>';return}
   renderDisc()}
  catch(e){D=[];$('#list').innerHTML='<div class="empty">Erro ao pesquisar: '+esc(String(e.message||e))+'<br>Não foi possível ligar ao Openverse. Abre o ficheiro diretamente no Safari/Chrome (não na pré-visualização) ou publica-o no GitHub Pages ou Netlify.</div>'}}
